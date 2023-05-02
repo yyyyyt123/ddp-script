@@ -156,11 +156,12 @@ criterion = nn.CrossEntropyLoss()
 # We simply have to loop over our data iterator, and feed the inputs to the
 # network and optimize.
 
-start_time = time.time()
-for epoch in range(2):  # loop over the dataset multiple times
+for epoch in range(1):  # loop over the dataset multiple times
 
     running_loss = 0.0
 
+    # timer start
+    start_time = time.time()
     for i, data in enumerate(trainloader2):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data[0].to(model_engine.local_rank), data[1].to(
@@ -182,8 +183,13 @@ for epoch in range(2):  # loop over the dataset multiple times
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / args.log_interval))
             running_loss = 0.0
-end_time = time.time()
-print("---------- Execution time: {:.2f} seconds ----------".format(end_time - start_time))
+            
+            # record avg step time
+            end_time = time.time()
+            print("Avg Execution time: {:.3f}".format((end_time - start_time)/args.log_interval * 1000))
+            start_time = time.time() # reset start time
+            
+# print("---------- Execution time: {:.2f} seconds ----------".format(end_time - start_time))
 
 dist.log_summary()
 print('Finished Training')
