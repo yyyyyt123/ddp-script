@@ -119,7 +119,7 @@ import torch.nn.functional as F
 
 args = add_argument()
 
-net = torchvision.models.resnet18()
+net = torchvision.models.resnet50()
 
 print(net)
 
