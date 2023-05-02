@@ -121,8 +121,6 @@ args = add_argument()
 
 net = torchvision.models.resnet50()
 
-print(net)
-
 parameters = filter(lambda p: p.requires_grad, net.parameters())
 
 # Initialize DeepSpeed to use the following features
