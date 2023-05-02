@@ -186,7 +186,8 @@ for epoch in range(1):  # loop over the dataset multiple times
             
             # record avg step time
             end_time = time.time()
-            print("Avg Execution time: {:.3f}".format((end_time - start_time)/args.log_interval * 1000))
+            if torch.distributed.get_rank() == 0:
+                print("in step {:4d} Avg Execution time: {:.3f}".format(i, (end_time - start_time)/args.log_interval * 1000))
             start_time = time.time() # reset start time
             
 # print("---------- Execution time: {:.2f} seconds ----------".format(end_time - start_time))
