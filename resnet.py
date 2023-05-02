@@ -143,6 +143,7 @@ print(f'fp16={fp16}')
 # Let's use a Classification Cross-Entropy loss and SGD with momentum.
 
 import torch.optim as optim
+import time
 
 criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -155,9 +156,11 @@ criterion = nn.CrossEntropyLoss()
 # We simply have to loop over our data iterator, and feed the inputs to the
 # network and optimize.
 
+start_time = time.time()
 for epoch in range(2):  # loop over the dataset multiple times
 
     running_loss = 0.0
+
     for i, data in enumerate(trainloader2):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data[0].to(model_engine.local_rank), data[1].to(
@@ -179,6 +182,9 @@ for epoch in range(2):  # loop over the dataset multiple times
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / args.log_interval))
             running_loss = 0.0
+end_time = time.time()
+print("---------- Execution time: {:.2f} seconds ----------".format(end_time - start_time))
+
 dist.log_summary()
 print('Finished Training')
 
