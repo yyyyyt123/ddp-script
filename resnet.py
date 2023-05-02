@@ -188,81 +188,81 @@ print("---------- Execution time: {:.2f} seconds ----------".format(end_time - s
 dist.log_summary()
 print('Finished Training')
 
-########################################################################
-# 5. Test the network on the test data
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#
-# We have trained the network for 2 passes over the training dataset.
-# But we need to check if the network has learnt anything at all.
-#
-# We will check this by predicting the class label that the neural network
-# outputs, and checking it against the ground-truth. If the prediction is
-# correct, we add the sample to the list of correct predictions.
-#
-# Okay, first step. Let us display an image from the test set to get familiar.
+# ########################################################################
+# # 5. Test the network on the test data
+# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# #
+# # We have trained the network for 2 passes over the training dataset.
+# # But we need to check if the network has learnt anything at all.
+# #
+# # We will check this by predicting the class label that the neural network
+# # outputs, and checking it against the ground-truth. If the prediction is
+# # correct, we add the sample to the list of correct predictions.
+# #
+# # Okay, first step. Let us display an image from the test set to get familiar.
 
-dataiter = iter(testloader)
-images, labels = dataiter.next()
+# dataiter = iter(testloader)
+# images, labels = dataiter.next()
 
-########################################################################
-# Okay, now let us see what the neural network thinks these examples above are:
-if fp16:
-    images = images.half()
-outputs = net(images.to(model_engine.local_rank))
+# ########################################################################
+# # Okay, now let us see what the neural network thinks these examples above are:
+# if fp16:
+#     images = images.half()
+# outputs = net(images.to(model_engine.local_rank))
 
-########################################################################
-# The outputs are energies for the 10 classes.
-# The higher the energy for a class, the more the network
-# thinks that the image is of the particular class.
-# So, let's get the index of the highest energy:
-_, predicted = torch.max(outputs, 1)
+# ########################################################################
+# # The outputs are energies for the 10 classes.
+# # The higher the energy for a class, the more the network
+# # thinks that the image is of the particular class.
+# # So, let's get the index of the highest energy:
+# _, predicted = torch.max(outputs, 1)
 
-print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
+# print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
 
-########################################################################
-# The results seem pretty good.
-#
-# Let us look at how the network performs on the whole dataset.
+# ########################################################################
+# # The results seem pretty good.
+# #
+# # Let us look at how the network performs on the whole dataset.
 
-correct = 0
-total = 0
-with torch.no_grad():
-    for data in testloader:
-        images, labels = data
-        if fp16:
-            images = images.half()
-        outputs = net(images.to(model_engine.local_rank))
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels.to(
-            model_engine.local_rank)).sum().item()
+# correct = 0
+# total = 0
+# with torch.no_grad():
+#     for data in testloader:
+#         images, labels = data
+#         if fp16:
+#             images = images.half()
+#         outputs = net(images.to(model_engine.local_rank))
+#         _, predicted = torch.max(outputs.data, 1)
+#         total += labels.size(0)
+#         correct += (predicted == labels.to(
+#             model_engine.local_rank)).sum().item()
 
-print('Accuracy of the network on the 10000 test images: %d %%' %
-      (100 * correct / total))
+# print('Accuracy of the network on the 10000 test images: %d %%' %
+#       (100 * correct / total))
 
-########################################################################
-# That looks way better than chance, which is 10% accuracy (randomly picking
-# a class out of 10 classes).
-# Seems like the network learnt something.
-#
-# Hmmm, what are the classes that performed well, and the classes that did
-# not perform well:
+# ########################################################################
+# # That looks way better than chance, which is 10% accuracy (randomly picking
+# # a class out of 10 classes).
+# # Seems like the network learnt something.
+# #
+# # Hmmm, what are the classes that performed well, and the classes that did
+# # not perform well:
 
-class_correct = list(0. for i in range(10))
-class_total = list(0. for i in range(10))
-with torch.no_grad():
-    for data in testloader:
-        images, labels = data
-        if fp16:
-            images = images.half()
-        outputs = net(images.to(model_engine.local_rank))
-        _, predicted = torch.max(outputs, 1)
-        c = (predicted == labels.to(model_engine.local_rank)).squeeze()
-        for i in range(4):
-            label = labels[i]
-            class_correct[label] += c[i].item()
-            class_total[label] += 1
+# class_correct = list(0. for i in range(10))
+# class_total = list(0. for i in range(10))
+# with torch.no_grad():
+#     for data in testloader:
+#         images, labels = data
+#         if fp16:
+#             images = images.half()
+#         outputs = net(images.to(model_engine.local_rank))
+#         _, predicted = torch.max(outputs, 1)
+#         c = (predicted == labels.to(model_engine.local_rank)).squeeze()
+#         for i in range(4):
+#             label = labels[i]
+#             class_correct[label] += c[i].item()
+#             class_total[label] += 1
 
-for i in range(10):
-    print('Accuracy of %5s : %2d %%' %
-          (classes[i], 100 * class_correct[i] / class_total[i]))
+# for i in range(10):
+#     print('Accuracy of %5s : %2d %%' %
+#           (classes[i], 100 * class_correct[i] / class_total[i]))
