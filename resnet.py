@@ -158,7 +158,6 @@ criterion = nn.CrossEntropyLoss()
 for epoch in range(2):  # loop over the dataset multiple times
 
     running_loss = 0.0
-    trainloader2.set_epoch(epoch)
     for i, data in enumerate(trainloader2):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data[0].to(model_engine.local_rank), data[1].to(
